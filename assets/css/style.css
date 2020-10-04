@@ -4,10 +4,20 @@ h1 {
   padding: 10px;
 }
 
-h3 {
+h4 {
   padding: 10px;
 }
 
+.mb-3 {
+  padding: 10px;
+}
+
+#recent {
+  color: rgb(145, 145, 145);
+}
+
 li {
+  cursor: pointer;
   list-style: none;
+  /* padding-bottom: 10px; */
 }
