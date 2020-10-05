@@ -4,8 +4,16 @@ h1 {
   padding: 10px;
 }
 
+h3 {
+  padding-top: 12px;
+}
+
 h4 {
   padding: 10px;
+}
+
+.btn {
+  background-color: rgb(49, 80, 253);
 }
 
 .mb-3 {
@@ -21,3 +29,35 @@ li {
   list-style: none;
   /* padding-bottom: 10px; */
 }
+
+#currentStats {
+  margin-top: 10px;
+  margin-left: 0px;
+  padding: 8px;
+}
+
+.row {
+  margin: 0px;
+  padding: 0px;
+}
+
+.card-body {
+  margin: 0px;
+  padding: 7px;
+}
+
+.extForecast {
+  color: white;
+  background-color: rgb(49, 80, 253);
+}
+
+/* .col-9 {
+  margin-left: 0px;
+  padding: 0px;
+} */
+
+.col-2 {
+  margin: 0px;
+  padding: 0px;
+}
+
