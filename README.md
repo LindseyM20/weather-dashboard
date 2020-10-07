@@ -27,7 +27,7 @@ To use this program, use your browser to go to https://lindseym20.github.io/weat
 
 Type a city in the text field, or choose a city from the list once you have searched cities. 
 
-![Weather Dashboard in Browser](./assets/images/screenshot.png)
+![Weather Dashboard in Browser](./assets/images/Screenshot.png)
 
 
 ## Credits:
