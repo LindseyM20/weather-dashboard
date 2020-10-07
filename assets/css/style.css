@@ -56,11 +56,6 @@ span {
   background-color: rgb(49, 80, 253);
 }
 
-/* .col-9 {
-  margin-left: 0px;
-  padding: 0px;
-} */
-
 .col-2 {
   margin: 0px;
   padding: 0px;
@@ -69,4 +64,3 @@ span {
 .bgGray {
   background-color: rgb(223, 223, 223);
 }
-
