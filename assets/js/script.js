@@ -1,52 +1,49 @@
 $(document).ready(function () {
-  var searchButton = document.querySelector("#button-addon2");
+  // Get stored cities from localStorage and parse the JSON string to an array
+  var storedCities = JSON.parse(localStorage.getItem("cities")) || [];
   var city;
-  //  = document.querySelector("#city-input").value;
+  console.log(storedCities);
+  console.log(city);
   var citiesEntered = document.querySelector("#cityList");
   var cityList = [];
+
 
   arrayify();
 
   function arrayify() {
-    // Get stored cities from localStorage and parse the JSON string to an array
-    var storedCities = JSON.parse(localStorage.getItem("cities"));
-
     // If cities were fetched from localStorage, assign them to cityList array
     if (storedCities !== null) {
       cityList = storedCities;
     }
-    // console.log(cityList);
-    // Render cities to the page
     renderSearchedCities();
   }
 
+  
+  // Display list of previously searched cities
   function renderSearchedCities() {
     $("#cityList").empty();
-    // Uncomment the line below if you get the city variable in AJAX url to work
-    document.getElementById('city-input').value = "";
-
-
-    // TRIED TO MAKE A FUNCTION THAT WOULD CAPITALIZE THE FIRST LETTER OF CITY ENTERED, BUT GAVE UP
-    // function capitalize(str) {
-    //   str = str.split(" ");
-
-    //   for (var j = 0; j < str.length; j++) {
-    //     str[i] = str[i][0].toUpperCase() + str[i].substr(1);
-    //   }
-    //   return str.join(" ");
-    // }
-
-
+    $("#city-input").val("");
 
     for (var i = 0; i < cityList.length + 1; i++) {
       var entry = (cityList[i]);
-
       var li = document.createElement("li");
       li.textContent = entry;
       $("li").attr("class", "list-group-item");
       li.setAttribute("data-index", i);
       citiesEntered.append(li);
     }
+
+    // Event listener for list items
+    $("li").on("click", function (event) {
+      event.preventDefault();
+      city = $(this).text();
+      console.log(city);
+      var index = $(this).attr("data-index");
+      cityList.splice(index, 1);
+      cityList.unshift(city);
+      renderCurrent();
+      renderSearchedCities();
+    });
 
     if (!entry) {
       return;
@@ -55,12 +52,8 @@ $(document).ready(function () {
 
 
   function stringify() {
-    // var city = document.querySelector("#city-input").value;
-    // city = $("#city-input").val().trim();
-
     if (city !== "") {
       console.log("Cool city!");
-
 
       // Push to cityList array
       cityList.unshift(city);
@@ -72,33 +65,10 @@ $(document).ready(function () {
     arrayify();
   }
 
-  // Search button event handler, and add city to localStorage
-  //Figure out how to make Enter work in addition to button
-  // searchButton.addEventListener("click", function (event) 
-  $("button").on("click", function (event) {
-    event.preventDefault();
-    city = $("#city-input").val().trim();
-    stringify(citiesEntered);
-    renderCurrent();
-    // renderForecast();
-  });
-
-
-
-  // Event listener for list items
-  $("li").on("click", function (event) {
-    event.preventDefault();
-    city = $(this).text();
-    console.log(city);
-    renderCurrent();
-    // renderForecast();
-  });
-
-
 
   function renderCurrent() {
-
-    // Here we are building the URL we need to query the database
+    city = storedCities[0];
+    // Building the URL needed to query the database
     var apiKey = "5f38cc51ae0ccd9325abd9a71adf92ba";
     var queryURL1 = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + apiKey;
 
@@ -112,11 +82,9 @@ $(document).ready(function () {
         console.log(queryURL1);
         console.log(response1);
 
-        // Get the latitude and longitude for using in the other AJAX call
+        // Get the latitude and longitude for using in the URL for the next AJAX call
         var lat = response1.coord.lat;
         var lon = response1.coord.lon;
-
-        var apiKey = "5f38cc51ae0ccd9325abd9a71adf92ba";
         var queryURL2 = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&exclude=minutely&appid=" + apiKey;
 
         // Run an AJAX call to the OpenWeatherMap API, plugging in lat & lon to get the other stats
@@ -128,21 +96,21 @@ $(document).ready(function () {
           .then(function (response2) {
             console.log(queryURL2);
             console.log(response2);
+            var UVindex = response2.current.uvi;
 
             // Convert the temp to fahrenheit
             function tempToF(x) {
-              var tempF = (x-273.15) * 1.8 + 32;
+              var tempF = (x - 273.15) * 1.8 + 32;
               tempF = tempF.toFixed(1);
               return tempF;
             }
 
-            var UVindex = response2.current.uvi;
-
             // Transfer content to HTML
             $("#cityAndDate").html("<h3>" + response1.name + " " + moment().format('L') + "<h3>");
-            $("#currentTemp").text("Temperature (F) " + tempToF(response2.current.temp));
-            $("#currentHumidity").text("Humidity: " + response1.main.humidity);
-            $("#wind").text("Wind Speed: " + response1.wind.speed);
+            $("#icon").attr("src", "http://openweathermap.org/img/wn/" + response2.current.weather[0].icon + "@2x.png");
+            $("#currentTemp").text("Temperature: " + tempToF(response2.current.temp) + "°F");
+            $("#currentHumidity").text("Humidity: " + response1.main.humidity + "%");
+            $("#wind").text("Wind Speed: " + response1.wind.speed + " MPH");
             $("#UV-index").html("UV Index:  <span>" + UVindex + "<span>");
 
             // Set UV Index color based on severity
@@ -155,29 +123,52 @@ $(document).ready(function () {
             } else {
               $("span").css("background-color", "red")
             }
+
+            // Set the date on the forecast cards
             var day1 = moment().add(1, 'day').format('L');
             var day2 = moment().add(2, 'day').format('L');
             var day3 = moment().add(3, 'day').format('L');
             var day4 = moment().add(4, 'day').format('L');
             var day5 = moment().add(5, 'day').format('L');
-            $("#date1").text(day1); 
+            $("#date1").text(day1);
             $("#date2").text(day2);
             $("#date3").text(day3);
             $("#date4").text(day4);
             $("#date5").text(day5);
 
-
-            // Display Temps for forecast cards
-            // var cardTempF = tempToF(response2.daily.1.temp.day);
-            // $("#card1temp").text(response2.);
-
+            // Display Temps, Humidity, and icons for forecast cards
+            for (var k = 1; k < 6; k++) {
+              // Temp
+              var cardTempF = tempToF(response2.daily[k].temp.day);
+              $("#cardTemp" + k).text("Temp: " + cardTempF + "°F");
+              // Humidity
+              $("#cardHum" + k).text("Humidity: " + response2.daily[k].humidity + "%");
+              // Icon
+              var cardIcon = "http://openweathermap.org/img/wn/" + response2.daily[k].weather[0].icon + "@2x.png";
+              $("#icon" + k).attr("src", cardIcon);
+            }
           });
-
-
-
       });
   }
 
 
+  // Event listener for search button
+  $("#button-addon2").on("click", function (event) {
+    event.preventDefault();
+    city = $("#city-input").val().trim();
+    stringify(citiesEntered);
+    renderCurrent();
+  });
+
+
+  // Event listener for list items
+  $("li").on("click", function (event) {
+    event.preventDefault();
+    city = $(this).text();
+    console.log(city);
+    renderCurrent();
+  });
+
+renderCurrent();
 
 });
